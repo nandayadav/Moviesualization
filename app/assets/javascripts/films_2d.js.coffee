@@ -6,9 +6,13 @@ class Film
   constructor: (@pr, @name, @tomato_score, @audience_score, @story, @budget, @profitability, @worldwide_gross) ->  
     # @x = Math.round(@pr.random(500))
     # @y = Math.round(@pr.random(500))
-    #@x = pr.random(800) + 50
-    @x = 0
+    @x = pr.random(800) + 50
+    #@x = 0
     @y = 0
+    @radius = 10
+    console.log("constructor: " + @tomato_score)
+    @tomato_score = 50 if @tomato_score == undefined
+    @final_radius = @tomato_score/4
     @z = pr.random(-100)
     @x_final = (@budget * 4)
     profit = Math.round(@worldwide_gross - @budget)
@@ -26,6 +30,17 @@ class Film
       @y += 1
     else if @y > @y_final
       @y -= 1
+      
+  update_radius: () ->
+    console.log(@radius)
+    console.log(@final_radius)
+    if @pr.abs(@radius - @final_radius) < 1.0
+      @radius = @final_radius
+    else if @radius < @final_radius
+      @radius += 0.1
+    else
+      @radius -= 0.1
+    
     
     
   disperse: () ->
@@ -34,11 +49,14 @@ class Film
       break if @x == (@budget + 100) and @y == (@profitability * 0.1) + 100
     
   draw: () ->
+    #for vibration
+    #@pr.translate(@x + @pr.random(1.0), @y + @pr.random(1.0))
     @pr.translate(@x, @y)
     #@pr.scale(0.25)
     @pr.noStroke()
     #@pr.fill(123, 5, 6)
-    @pr.sphere(@tomato_score/4)
+    @pr.sphere(@radius)
+    #@pr.sphere(20)
     if (@x == @x_final) and (@y == @y_final)
       #sets its equilibrium reached state
       @equilibrium = true
@@ -65,19 +83,9 @@ coffee_draw = (pr) ->
     console.log("Inside setup")
     @draw_count = 0
     @films = pr.get_data()
-    # @films.push(new Film(pr, 'Titanic', 55, 15, 'Love', 0, 1387.57))
-    #     @films.push(new Film(pr, 'Mr Suess', 45, 87, 'Discovery', 14, 3387.57))
-    #     @films.push(new Film(pr, 'Gladiator', 35, 87, 'Discovery', 34, 387.57))
-    #     @films.push(new Film(pr, 'vampire diaries', 95, 87, 'Discovery', 21, 6387.57))
-    #     @films.push(new Film(pr, 'Motionless', 87, 34, 'Love', 13, 2387.57))
-    #setup and initialize films via ajax call
     pr.size(900, 800, pr.OPENGL)
-    pr.frameRate(60)
+    pr.frameRate(30)
     pr.background(212)
-    # pr.strokeWeight(2);
-    # pr.line(0, 400, 0, 800, 400, 0)
-    # pr.line(0, 0, 0, 0, 800, 0) #profitability y-axis
-    #pr.noLoop()
 
     @angle = 0
     @displacement = 1
@@ -125,6 +133,7 @@ coffee_draw = (pr) ->
       pr.pushMatrix()     
       film.draw() 
       film.update_positions()
+      #film.update_radius()
       pr.popMatrix()
     
     #pr.fill(0, 102, 153)
@@ -134,10 +143,10 @@ coffee_draw = (pr) ->
     pr.textAlign(pr.CENTER, pr.CENTER)
     #fixme: how to vertically align this?
     pr.text("Profit ($m)", 30, 200)
-    pr.line(0, height/2, 0, width, height/2, 0)
+    pr.line(0, 400, 0, 900, 400, 0)
     #pr.fill(0, 0, 0)
-    pr.text("Budget ($m)", width/2, height/2)
-    pr.line(0, 0, 0, 0, height, 0) #profitability y-axis
+    pr.text("Budget ($m)", 400, 400)
+    pr.line(0, 0, 0, 0, 800, 0) #profitability y-axis
     #Instead of checking if film is in its equlibrium place after every render, this is more efficient as (pr.width + pr.height)/2 frames should be more than enough for film to reach its place
     if @draw_count > (pr.width + pr.height)/2
       console.log("stopped")

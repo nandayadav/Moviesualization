@@ -86,11 +86,6 @@
             <li><a href="#about">About</a></li>
             <li><a href="#contact">Contact</a></li>
           </ul>
-          <form action="" class="pull-right">
-            <input class="input-small" type="text" placeholder="Username">
-            <input class="input-small" type="password" placeholder="Password">
-            <button class="btn" type="submit">Sign in</button>
-          </form>
         </div>
       </div>
     </div>
@@ -99,10 +94,11 @@
 
       <div class="content">
         <div class="page-header">
-          <h1>Page name <small>Supporting text or tagline</small></h1>
+          <!-- <h1>Page name <small>Supporting text or tagline</small></h1> -->
+          <%= render :partial => 'layouts/control_panel' %>
         </div>
         <div class="row">
-          <div class="span16" style="background: red">
+          <div class="span16">
             <h2><%= yield %></h2>
           </div>
         </div>
@@ -111,7 +107,7 @@
       </div>
 
       <footer>
-        <p>&copy; Company 2012</p>
+        <p>&copy; Nanda Yadav</p>
       </footer>
 
     </div> <!-- /container -->
