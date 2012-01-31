@@ -6,6 +6,6 @@ class Story
   key :blue, Integer
   key :color, String #HHAA00 format
   many :films
-  
+  key :gradient, String
 
 end

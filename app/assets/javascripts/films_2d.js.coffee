@@ -101,22 +101,21 @@ coffee_draw = (pr) ->
   pr.mouseDragged = () ->
     @angle -= 0.05
     pr.redraw()
+    
   # 
   # #Aggregate films into their story_name/plots  
-  pr.mouseClicked = () ->
-    for film in @films
-      film.disabled = true unless film.story_name == 'Love'
-    pr.redraw()
-    # console.log("(" + pr.mouseX + "," + pr.mouseY + ")")
-    #     for f in @films
-    #       if (pr.dist(pr.mouseX, pr.mouseY, f.x_final + 50, f.y_final) < f.tomato_score/4)
-    #         console.log("Name: " + f.name)
-    #         console.log("Worldwide: " + f.worldwide_gross)
-    #         console.log("Profitability: " + f.profitability)
-    #         console.log("X_final: " + f.x_final)
-    #         console.log("Y_final: " + f.y_final)
-    #         console.log("mouseY: " + pr.mouseY)
-    #         break
+  # pr.mouseClicked = () ->
+  #   pr.redraw()
+  #   console.log("(" + pr.mouseX + "," + pr.mouseY + ")")
+  #     for f in @films
+  #       if (pr.dist(pr.mouseX, pr.mouseY, f.x_final + 50, f.y_final) < f.tomato_score/4)
+  #         console.log("Name: " + f.name)
+  #         console.log("Worldwide: " + f.worldwide_gross)
+  #         console.log("Profitability: " + f.profitability)
+  #         console.log("X_final: " + f.x_final)
+  #         console.log("Y_final: " + f.y_final)
+  #         console.log("mouseY: " + pr.mouseY)
+  #         break
       
     
     
@@ -167,6 +166,15 @@ coffee_draw = (pr) ->
 $(document).ready ->
   canvas = document.getElementById "processing"
   pr = new Processing(canvas, coffee_draw)
+  
+  $('button').click ->
+    story = $(this).text()
+    for film in pr.films
+      if film.story_name == story
+        film.disabled = false
+      else
+        film.disabled = true
+    pr.redraw()
 
     
       
