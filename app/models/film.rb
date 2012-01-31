@@ -1,10 +1,9 @@
 class Film
   include MongoMapper::Document
   key :name, String 
-  key :studio, String
   key :tomato_score, Integer #Rotten Tomatoes score(%)
   key :audience_score, Integer #Audience score from Tomato
-  key :story, String
+  key :studio, String
   key :num_theaters_opening_weekend, Integer 
   key :box_office_avg_per_cinema, Integer
   key :domestic_gross, Float
@@ -15,6 +14,28 @@ class Film
   key :year, Integer
 
   belongs_to :genre
+  belongs_to :story
+  
+  def story_color
+    return "##{story.color}" if story && story.color
+    "#AABB67"
+  end
+  
+  def story_name
+    story.name
+  end
+  
+  def r
+    story.red || 123
+  end
+  
+  def g
+    story.green || 34
+  end
+  
+  def b
+    story.blue || 14
+  end
   
 
 end

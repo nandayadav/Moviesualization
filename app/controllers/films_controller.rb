@@ -3,12 +3,11 @@ class FilmsController < ApplicationController
   
   def index
     @films = Film.all
-    #@films = [Film.find_by_name("Anonymous")]
-    #render :json => @films
+    @stories = Story.all
     respond_to do |format|
       format.html # index.html.erb
       format.js # { render :json => @users}
-      format.json { render :json => @films}
+      format.json { render :json => @films, :methods => [:r, :g, :b, :story_name]}
     end
   end
   

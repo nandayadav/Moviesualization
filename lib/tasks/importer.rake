@@ -8,7 +8,9 @@ namespace :import do
       f.studio = row[2]
       f.tomato_score = row[3]
       f.audience_score = row[4]
-      f.story = row[5]
+      s = Story.find_by_name(row[5])
+      s ||= Story.create(:name => row[5])
+      f.story = s
       g = Genre.find_by_name(row[6])
       g ||= Genre.create(:name => row[6])
       f.genre = g

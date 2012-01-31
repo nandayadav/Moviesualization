@@ -3,22 +3,24 @@
 # You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script
   
 class Film
-  constructor: (@pr, @name, @tomato_score, @audience_score, @story, @budget, @profitability, @worldwide_gross) ->  
+  constructor: (@pr, @name, @tomato_score, @audience_score, @story_name, @budget, @profitability, @worldwide_gross, @r, @g, @b) ->  
     # @x = Math.round(@pr.random(500))
     # @y = Math.round(@pr.random(500))
-    @x = pr.random(800) + 50
+    @x = Math.round(pr.random(800)) + 50
     #@x = 0
     @y = 0
-    @radius = 10
-    console.log("constructor: " + @tomato_score)
+    @radius = 15
+    
     @tomato_score = 50 if @tomato_score == undefined
     @final_radius = @tomato_score/4
     @z = pr.random(-100)
-    @x_final = (@budget * 4)
+    @x_final = Math.round(@budget * 4)
+    console.log("x: " + @x_final)
     profit = Math.round(@worldwide_gross - @budget)
     @y_final = 400 - profit
     #@y_final = 800 - Math.round(@profitability * 0.2)
     @equilibrium = false
+    @disabled = false
     
   update_positions: () ->
     if @x < @x_final
@@ -49,12 +51,14 @@ class Film
       break if @x == (@budget + 100) and @y == (@profitability * 0.1) + 100
     
   draw: () ->
+    return if @disabled
     #for vibration
     #@pr.translate(@x + @pr.random(1.0), @y + @pr.random(1.0))
     @pr.translate(@x, @y)
     #@pr.scale(0.25)
     @pr.noStroke()
-    #@pr.fill(123, 5, 6)
+    @pr.fill(@r, @g, @b)
+    
     @pr.sphere(@radius)
     #@pr.sphere(20)
     if (@x == @x_final) and (@y == @y_final)
@@ -74,7 +78,7 @@ coffee_draw = (pr) ->
         for f in data
           #Populate @films array
           #console.log(f['name'])
-          film = new Film(pr, f['name'], f['tomato_score'], f['audience_score'], f['story'], f['budget'], f['profitability'], f['worldwide_gross'])
+          film = new Film(pr, f['name'], f['tomato_score'], f['audience_score'], f['story_name'], f['budget'], f['profitability'], f['worldwide_gross'], f['r'], f['g'], f['b'])
           films.push(film)
       dataType: 'json'
     return films
@@ -86,7 +90,8 @@ coffee_draw = (pr) ->
     pr.size(900, 800, pr.OPENGL)
     pr.frameRate(30)
     pr.background(212)
-
+    #little less taxing on cup(default is 30)
+    pr.sphereDetail(20)
     @angle = 0
     @displacement = 1
     #@film = new Film("nanda", 100, 200, "whatever", 34, 2000)
@@ -97,19 +102,21 @@ coffee_draw = (pr) ->
     @angle -= 0.05
     pr.redraw()
   # 
-  # #Aggregate films into their story/plots  
+  # #Aggregate films into their story_name/plots  
   pr.mouseClicked = () ->
-    console.log("(" + pr.mouseX + "," + pr.mouseY + ")")
-    for f in @films
-      if (pr.dist(pr.mouseX, pr.mouseY, f.x_final + 50, f.y_final) < f.tomato_score/4)
-        console.log("Name: " + f.name)
-        console.log("Worldwide: " + f.worldwide_gross)
-        console.log("Profitability: " + f.profitability)
-        console.log("X_final: " + f.x_final)
-        console.log("Y_final: " + f.y_final)
-        console.log("mouseY: " + pr.mouseY)
-        $('#film_details').modal('show')
-        break
+    for film in @films
+      film.disabled = true unless film.story_name == 'Love'
+    pr.redraw()
+    # console.log("(" + pr.mouseX + "," + pr.mouseY + ")")
+    #     for f in @films
+    #       if (pr.dist(pr.mouseX, pr.mouseY, f.x_final + 50, f.y_final) < f.tomato_score/4)
+    #         console.log("Name: " + f.name)
+    #         console.log("Worldwide: " + f.worldwide_gross)
+    #         console.log("Profitability: " + f.profitability)
+    #         console.log("X_final: " + f.x_final)
+    #         console.log("Y_final: " + f.y_final)
+    #         console.log("mouseY: " + pr.mouseY)
+    #         break
       
     
     
@@ -133,7 +140,7 @@ coffee_draw = (pr) ->
       pr.pushMatrix()     
       film.draw() 
       film.update_positions()
-      #film.update_radius()
+      film.update_radius()
       pr.popMatrix()
     
     #pr.fill(0, 102, 153)

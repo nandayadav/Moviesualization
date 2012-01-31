@@ -1,24 +1,4 @@
-<div>
-<button class="btn">Discovery</button>&nbsp;
-<button class="btn">Escape</button>&nbsp;
-<button class="btn">Journey & Return</button>&nbsp;
-<button class="btn">Comedy</button>&nbsp;
-<button class="btn">Fish out of Water</button>&nbsp;
-<button class="btn">Love</button>&nbsp;
-<button class="btn">Monster Force</button>&nbsp;
-<button class="btn">Pursuit</button>&nbsp;
-<button class="btn">Quest</button>&nbsp;
-<button class="btn">Rescue</button>&nbsp;
-</div></br>
-<div>
-<button class="btn">Rags to Riches</button>&nbsp;
-<button class="btn">Revenge</button>&nbsp;
-<button class="btn">Rivalry</button>&nbsp;
-<button class="btn">Sacrifice</button>&nbsp;
-<button class="btn">The Riddle</button>&nbsp;
-<button class="btn">Tragedy</button>&nbsp;
-<button class="btn">Transformation</button>&nbsp;
-<button class="btn">Underdog</button>&nbsp;
-<button class="btn">Wretched Express</button>&nbsp;
-
-</div>
+<% @stories.each_with_index do |story, index| %>
+  <!-- <button class="btn common" style="<%#= common_button(story.color || '4052A3') %>"><%= story.name %></button>&nbsp; -->
+  <button class="btn"><%= story.name %></button>&nbsp;
+<% end %>
