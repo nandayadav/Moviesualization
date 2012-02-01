@@ -22,19 +22,19 @@ class Film
   end
   
   def story_name
-    story.name
+    story ? story.name : ''
   end
   
   def r
-    story.red || 123
+    story ? story.red : 123
   end
   
   def g
-    story.green || 34
+    story ? story.green : 34
   end
   
   def b
-    story.blue || 14
+    story ? story.blue : 14
   end
   
 

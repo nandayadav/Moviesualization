@@ -1,7 +1,21 @@
 require 'csv'
 namespace :import do 
+  
+  task :colors => :environment do
+    f = YAML::load(File.read('./data/stories.yml'))
+    f.each do |story, val|
+      puts story
+      s = Story.find_by_name(story)
+      s.color = val['color'].to_s
+      rgb = val['color'].to_s.match /(..)(..)(..)/
+      s.red = rgb[1].hex
+      s.green = rgb[2].hex
+      s.blue = rgb[3].hex
+      s.save!
+    end
+  end
   task :csv => :environment do
-    CSV.foreach("data/file.csv") do |row|
+    CSV.foreach("data/file_2010.csv") do |row|
       next unless row[0].nil?
       f = Film.new
       f.name = row[1]
