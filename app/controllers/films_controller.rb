@@ -8,7 +8,7 @@ class FilmsController < ApplicationController
     else
       @films = Film.all
     end
-    @stories = Story.limit(10).all
+    @stories = Story.where.order(:name).all
     respond_to do |format|
       format.html # index.html.erb
       format.js # { render :json => @users}
