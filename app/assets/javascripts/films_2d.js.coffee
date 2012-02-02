@@ -1,32 +1,36 @@
 # Place all the behaviors and hooks related to the matching controller here.
 # All this logic will automatically be available in application.js.
 # You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script
-  
+
 class Film
   constructor: (@pr, @name, @tomato_score, @audience_score, @story_name, @budget, @profitability, @worldwide_gross, @r, @g, @b) ->  
     # @x = Math.round(@pr.random(500))
     # @y = Math.round(@pr.random(500))
-    @x = Math.round(pr.random(800)) + 50
-    #@x = 0
-    @y = 0.0
-    #@radius = 15
+    #@x = Math.round(pr.random(800)) + 50
+    @x = 400.0
+    @y = 200.0
+    @radius = 5
     
     @tomato_score = 50 if @tomato_score == undefined
     @final_radius = @tomato_score/4
-    @radius = @final_radius
-    @radius = 5.0 if @radius < 5.0
-    @z = pr.random(-100)
+    @final_radius = 5.0 if @final_radius < 5.0
+    #@radius = @final_radius
+    #@radius = 5.0 if @radius < 5.0
+    if @final_radius > 10
+      @z = @pr.random(-50)
+    else
+      @z = 0
     @x_final = Math.round(@budget * 4)
     console.log("x: " + @x_final)
     profit = Math.round(@worldwide_gross - @budget)
-    @y_final = 400 - profit
+    @y_final = 600 - profit
     #@y_final = 800 - Math.round(@profitability * 0.2)
     @equilibrium = false
     @disabled = false
     
     #Particle stuff
-    @location = new @pr.PVector(@x, @y)
-    @velocity = new @pr.PVector(1.0, 1.0)
+    @location = new @pr.PVector(@x, @y, @z)
+    @velocity = new @pr.PVector(1.0, 1.0, 0.0)
     
   update_velocity: () ->
     x = @velocity.x
@@ -68,21 +72,14 @@ class Film
       @radius -= 0.1
     
     
-    
-  disperse: () ->
-    loop
-      draw()
-      break if @x == (@budget + 100) and @y == (@profitability * 0.1) + 100
-    
   draw: () ->
     return if @disabled
     @location.add(@velocity)
-    console.log("Updated: " + @location.x + "," + @location.y )
     #for vibration
     #@pr.translate(@x + @pr.random(1.0), @y + @pr.random(1.0))
     #@pr.translate(@x, @y)
     if @equilibrium
-      @pr.translate(@location.x, @location.y) 
+      @pr.translate(@location.x, @location.y, @location.z) 
     else
       #vibration 
       @pr.translate(@location.x + @pr.random(2.0), @location.y + @pr.random(2.0)) 
@@ -134,16 +131,16 @@ coffee_draw = (pr) ->
   #   pr.redraw()
     
   pr.mouseReleased = () ->
-    for f in @films
-      if (pr.dist(pr.mouseX, pr.mouseY, f.x_final + 50, f.y_final) < f.radius)
-        console.log("Name: " + f.name)
-        $('#film-popover').popover('hide')
-        break
-        
+    $('#film-popover').popover('hide')
+    
   pr.mousePressed = () ->
+    matches = []
     for f in @films
-      if (pr.dist(pr.mouseX, pr.mouseY, f.x_final + 50, f.y_final) < f.radius)
+      dist = pr.dist(pr.mouseX, pr.mouseY, f.x_final + 50, f.y_final)
+      if dist < f.radius
+        matches.push(f)
         console.log("Name: " + f.name)
+        console.log("Disance: " + dist)
         content = "<h3>" + f.name + "</h3>" + "<br/>Rotten Tomatoes: " + f.tomato_score + "<br/>Story: " + f.story_name + "<br/>Audience Score: " + f.audience_score + "<br/>Budget($m): " + f.budget + "<br/>Profitability: " + f.profitability + "%"
         $('#film-popover').attr('data-title', f.name)
         $('#film-popover').attr('data-content', content)
@@ -192,7 +189,7 @@ coffee_draw = (pr) ->
       film.draw() 
       film.update_velocity()
       #film.update_positions()
-      #film.update_radius()
+      film.update_radius()
       pr.popMatrix()
     
     #pr.fill(0, 102, 153)
@@ -202,9 +199,9 @@ coffee_draw = (pr) ->
     pr.textAlign(pr.CENTER, pr.CENTER)
     #fixme: how to vertically align this?
     pr.text("Profit ($m)", 30, 200)
-    pr.line(0, 400, 0, 900, 400, 0)
+    pr.line(0, 600, 0, 900, 600, 0)
     #pr.fill(0, 0, 0)
-    pr.text("Budget ($m)", 400, 400)
+    pr.text("Budget ($m)", 600, 600)
     pr.line(0, 0, 0, 0, 800, 0) #profitability y-axis
     #Instead of checking if film is in its equlibrium place after every render, this is more efficient as (pr.width + pr.height)/2 frames should be more than enough for film to reach its place
     if @draw_count > (pr.width + pr.height)/2
