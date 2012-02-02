@@ -1,9 +1,8 @@
+<div class="btn-group" data-toggle="buttons-checkbox">
 <% @stories.each_with_index do |story, index| %>
-  <% if story == 'Wretched Excess' %>
-    <div>&nbsp;</div>
-    <div></br></br></div>
-  <% end %>
-  <button class="btn common" style="<%= common_button(story.color || '57a957', story.gradient || '62c462') %>"><%= story.name %></button>&nbsp;
+    <button class="btn"><%= story.name %></button>
+  <!-- <button class="btn common" style="<%#= common_btn(story.color || '57a957', story.gradient || '62c462') %>"><%= story.name %></button>&nbsp; -->
 
   <!-- <button class="btn"><%= story.name %></button>&nbsp; -->
 <% end %>
+</div>

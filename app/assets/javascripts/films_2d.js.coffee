@@ -9,10 +9,12 @@ class Film
     @x = Math.round(pr.random(800)) + 50
     #@x = 0
     @y = 0
-    @radius = 15
+    #@radius = 15
     
     @tomato_score = 50 if @tomato_score == undefined
     @final_radius = @tomato_score/4
+    @radius = @final_radius
+    @radius = 5.0 if @radius < 5.0
     @z = pr.random(-100)
     @x_final = Math.round(@budget * 4)
     console.log("x: " + @x_final)
@@ -34,8 +36,6 @@ class Film
       @y -= 1
       
   update_radius: () ->
-    console.log(@radius)
-    console.log(@final_radius)
     if @pr.abs(@radius - @final_radius) < 1.0
       @radius = @final_radius
     else if @radius < @final_radius
@@ -91,16 +91,37 @@ coffee_draw = (pr) ->
     pr.frameRate(30)
     pr.background(212)
     #little less taxing on cup(default is 30)
-    pr.sphereDetail(20)
+    pr.sphereDetail(30)
     @angle = 0
     @displacement = 1
     #@film = new Film("nanda", 100, 200, "whatever", 34, 2000)
     pr.noStroke()
     
 
-  pr.mouseDragged = () ->
-    @angle -= 0.05
-    pr.redraw()
+  # pr.mouseDragged = () ->
+  #   @angle -= 0.05
+  #   pr.redraw()
+    
+  pr.mouseReleased = () ->
+    for f in @films
+      if (pr.dist(pr.mouseX, pr.mouseY, f.x_final + 50, f.y_final) < f.radius)
+        console.log("Name: " + f.name)
+        $('#film-popover').popover('hide')
+        break
+        
+  pr.mousePressed = () ->
+    for f in @films
+      if (pr.dist(pr.mouseX, pr.mouseY, f.x_final + 50, f.y_final) < f.radius)
+        console.log("Name: " + f.name)
+        content = "<h3>" + f.name + "</h3>" + "<br/>Rotten Tomatoes: " + f.tomato_score + "<br/>Story: " + f.story_name + "<br/>Audience Score: " + f.audience_score + "<br/>Budget($m): " + f.budget + "<br/>Profitability: " + f.profitability + "%"
+        $('#film-popover').attr('data-title', f.name)
+        $('#film-popover').attr('data-content', content)
+        $('#film-popover').popover('show')
+        # $("#title").text(f.name)
+        # $("#tomato-score").text(f.tomato_score)
+        # $("#audience-score").text(f.audience_score)
+        # $('#myModal').modal()
+        break
     
   # 
   # #Aggregate films into their story_name/plots  
@@ -139,7 +160,7 @@ coffee_draw = (pr) ->
       pr.pushMatrix()     
       film.draw() 
       film.update_positions()
-      film.update_radius()
+      #film.update_radius()
       pr.popMatrix()
     
     #pr.fill(0, 102, 153)
@@ -166,7 +187,7 @@ coffee_draw = (pr) ->
 $(document).ready ->
   canvas = document.getElementById "processing"
   pr = new Processing(canvas, coffee_draw)
-  
+  $('#film-popover').popover({ placement: 'right'})
   $('button').click ->
     story = $(this).text()
     for film in pr.films

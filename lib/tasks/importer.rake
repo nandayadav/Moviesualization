@@ -15,7 +15,8 @@ namespace :import do
     end
   end
   task :csv => :environment do
-    CSV.foreach("data/file_2010.csv") do |row|
+    raise "Enter year=" if ENV['year'].nil?
+    CSV.foreach("data/file_2011.csv") do |row|
       next unless row[0].nil?
       f = Film.new
       f.name = row[1]
@@ -35,7 +36,7 @@ namespace :import do
       f.worldwide_gross = row[11]
       f.budget = row[12]
       f.profitability = row[13]
-      f.year = ENV['year'] || 2007
+      f.year = ENV['year']
       begin
         f.save!
         puts f.name

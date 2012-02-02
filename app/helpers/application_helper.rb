@@ -17,4 +17,22 @@ module ApplicationHelper
         border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
     )
   end
+  
+  def common_btn(color, gradient)
+    %(
+        background-color: ##{color};
+        background-repeat: repeat-x;
+        background-image: -khtml-gradient(linear, left top, left bottom, from(##{color}), to(##{color}));
+        background-image: -moz-linear-gradient(top, ##{color}, ##{color});
+        background-image: -ms-linear-gradient(top, ##{color}, ##{color});
+        background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, ##{color}), color-stop(100%, ##{color}));
+        background-image: -webkit-linear-gradient(top, ##{color}, ##{color});
+        background-image: -o-linear-gradient(top, ##{color}, ##{color});
+        background-image: linear-gradient(top, ##{color}, ##{color});
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='##{color}', endColorstr='##{color}', GradientType=0);
+        text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+        border-color: ##{color} ##{color} #3d773d;
+        border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    )
+  end
 end
