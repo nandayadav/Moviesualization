@@ -1,6 +1,6 @@
 class FilmsController < ApplicationController
   
-  
+  http_basic_authenticate_with :name => "jhasdf7", :password => "9kk7uas3ld"
   def index
     year = params[:year] || 2011
     if year
