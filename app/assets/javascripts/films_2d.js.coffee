@@ -8,7 +8,7 @@ class Film
     # @y = Math.round(@pr.random(500))
     @x = Math.round(pr.random(800)) + 50
     #@x = 0
-    @y = 0
+    @y = 0.0
     #@radius = 15
     
     @tomato_score = 50 if @tomato_score == undefined
@@ -23,6 +23,30 @@ class Film
     #@y_final = 800 - Math.round(@profitability * 0.2)
     @equilibrium = false
     @disabled = false
+    
+    #Particle stuff
+    @location = new @pr.PVector(@x, @y)
+    @velocity = new @pr.PVector(1.0, 1.0)
+    
+  update_velocity: () ->
+    x = @velocity.x
+    y = @velocity.y
+    if @location.x < @x_final
+      x = 1.0
+    else if @location.x > @x_final
+      x = -1.0
+    else
+      x = 0.0
+    
+    if @location.y < @y_final
+      y = 1.0
+    else if @location.y > @y_final
+      y = -1.0
+    else
+      y = 0.0
+    @velocity.x = x
+    @velocity.y = y
+    
     
   update_positions: () ->
     if @x < @x_final
@@ -52,16 +76,23 @@ class Film
     
   draw: () ->
     return if @disabled
+    @location.add(@velocity)
+    console.log("Updated: " + @location.x + "," + @location.y )
     #for vibration
     #@pr.translate(@x + @pr.random(1.0), @y + @pr.random(1.0))
-    @pr.translate(@x, @y)
+    #@pr.translate(@x, @y)
+    if @equilibrium
+      @pr.translate(@location.x, @location.y) 
+    else
+      #vibration 
+      @pr.translate(@location.x + @pr.random(2.0), @location.y + @pr.random(2.0)) 
     #@pr.scale(0.25)
     @pr.noStroke()
     @pr.fill(@r, @g, @b)
     
     @pr.sphere(@radius)
     #@pr.sphere(20)
-    if (@x == @x_final) and (@y == @y_final)
+    if @velocity.x == 0 and @velocity.y == 0
       #sets its equilibrium reached state
       @equilibrium = true
     
@@ -159,7 +190,8 @@ coffee_draw = (pr) ->
     for film in @films 
       pr.pushMatrix()     
       film.draw() 
-      film.update_positions()
+      film.update_velocity()
+      #film.update_positions()
       #film.update_radius()
       pr.popMatrix()
     
