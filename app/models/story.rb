@@ -1,6 +1,6 @@
 class Story
   include MongoMapper::Document
-  key :name, String
+  key :name, String, :required => true, :unique => true
   key :red, Integer
   key :green, Integer
   key :blue, Integer

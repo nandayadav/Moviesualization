@@ -17,11 +17,13 @@ class Film
     #@radius = @final_radius
     #@radius = 5.0 if @radius < 5.0
     if @final_radius > 10
-      @z = @pr.random(-50)
+      #fixme: translating on z-axis screws up mousePressed film find
+      #@z = @pr.random(-50)
+      @z = 0
     else
+      #ensure smaller ones are closer to screen, above the bigger spheres
       @z = 0
     @x_final = Math.round(@budget * 4)
-    console.log("x: " + @x_final)
     profit = Math.round(@worldwide_gross - @budget)
     @y_final = 600 - profit
     #@y_final = 800 - Math.round(@profitability * 0.2)
@@ -95,12 +97,14 @@ class Film
     
     
     
-coffee_draw = (pr) ->  
+film_draw = (pr) ->  
 
   #Ajax call
-  pr.get_data = () ->
+  pr.get_data = (year) ->
     films = []
-    $.ajax '/films'
+    #u = '/films?year=2007'
+    $.ajax
+      url : '/films?year=' + year
       type: 'GET',
       success: (data) ->
         for f in data
@@ -111,11 +115,20 @@ coffee_draw = (pr) ->
       dataType: 'json'
     return films
       
+  pr.reset = (year) ->
+    @films = []
+    pr.noLoop() #Stop if its still looping
+    pr.redraw()
+    console.log("Year: " + year)
+    @films = pr.get_data(year)
+    @draw_count = 0
+    pr.loop()
+    
   pr.setup = () ->
     console.log("Inside setup")
     @draw_count = 0
-    @films = pr.get_data()
-    pr.size(900, 800, pr.OPENGL)
+    @films = pr.get_data(2007)
+    pr.size(1000, 800, pr.OPENGL)
     pr.frameRate(30)
     pr.background(212)
     #little less taxing on cup(default is 30)
@@ -125,7 +138,8 @@ coffee_draw = (pr) ->
     #@film = new Film("nanda", 100, 200, "whatever", 34, 2000)
     pr.noStroke()
     
-
+  # pr.mouseClicked = () ->
+  #   pr.reset()
   # pr.mouseDragged = () ->
   #   @angle -= 0.05
   #   pr.redraw()
@@ -134,22 +148,28 @@ coffee_draw = (pr) ->
     $('#film-popover').popover('hide')
     
   pr.mousePressed = () ->
-    matches = []
+    matched = null
+    min_distance = null
+    console.log("/////////////////////////////////")
     for f in @films
       dist = pr.dist(pr.mouseX, pr.mouseY, f.x_final + 50, f.y_final)
       if dist < f.radius
-        matches.push(f)
+        if (min_distance and dist < min_distance) or (!min_distance)
+          min_distance = dist
+          matched = f
         console.log("Name: " + f.name)
         console.log("Disance: " + dist)
-        content = "<h3>" + f.name + "</h3>" + "<br/>Rotten Tomatoes: " + f.tomato_score + "<br/>Story: " + f.story_name + "<br/>Audience Score: " + f.audience_score + "<br/>Budget($m): " + f.budget + "<br/>Profitability: " + f.profitability + "%"
-        $('#film-popover').attr('data-title', f.name)
-        $('#film-popover').attr('data-content', content)
-        $('#film-popover').popover('show')
-        # $("#title").text(f.name)
-        # $("#tomato-score").text(f.tomato_score)
-        # $("#audience-score").text(f.audience_score)
-        # $('#myModal').modal()
-        break
+        # content = "<h3>" + f.name + "</h3>" + "<br/>Rotten Tomatoes: " + f.tomato_score + "<br/>Story: " + f.story_name + "<br/>Audience Score: " + f.audience_score + "<br/>Budget($m): " + f.budget + "<br/>Profitability: " + f.profitability + "%"
+        # $('#film-popover').attr('data-title', f.name)
+        # $('#film-popover').attr('data-content', content)
+        # $('#film-popover').popover('show')
+        #break
+    if matched and min_distance
+      content = "<h3>" + matched.name + "</h3>" + "<br/>Rotten Tomatoes: " + matched.tomato_score + "<br/>Story: " + matched.story_name + "<br/>Audience Score: " + matched.audience_score + "<br/>Budget($m): " + matched.budget + "<br/>Profitability: " + matched.profitability + "%"
+      $('#film-popover').attr('data-title', matched.name)
+      $('#film-popover').attr('data-content', content)
+      $('#film-popover').popover('show')
+    
     
   # 
   # #Aggregate films into their story_name/plots  
@@ -204,7 +224,7 @@ coffee_draw = (pr) ->
     pr.text("Budget ($m)", 600, 600)
     pr.line(0, 0, 0, 0, 800, 0) #profitability y-axis
     #Instead of checking if film is in its equlibrium place after every render, this is more efficient as (pr.width + pr.height)/2 frames should be more than enough for film to reach its place
-    if @draw_count > (pr.width + pr.height)/2
+    if @draw_count > 600
       console.log("stopped")
       pr.noLoop() 
 
@@ -215,7 +235,14 @@ coffee_draw = (pr) ->
 # create a pr instance...
 $(document).ready ->
   canvas = document.getElementById "processing"
-  pr = new Processing(canvas, coffee_draw)
+  pr = new Processing(canvas, film_draw)
+  
+  $('.btn-primary').click ->
+    # alert($(this).text())
+    if pr
+      console.log("asdfasdfasdf")
+      pr.reset($(this).text())
+    
   $('#film-popover').popover({ placement: 'right'})
   $('button').click ->
     story = $(this).text()

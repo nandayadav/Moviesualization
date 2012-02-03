@@ -1,10 +1,17 @@
 <% @stories.in_groups_of(9).each do |stories| %>
   <div class="btn-group" style="padding: 2px;">
   <% stories.compact.each_with_index do |story, index| %>
-      <button class="btn"><%= story.name %></button>
+      <button class="btn" style="background-color: #<%= story.color %>"><%= story.name %></button>
     <!-- <button class="btn common" style="<%#= common_btn(story.color || '57a957', story.gradient || '62c462') %>"><%= story.name %></button>&nbsp; -->
 
     <!-- <button class="btn"><%= story.name %></button>&nbsp; -->
   <% end %>
   </div>
 <% end %>
+<div class="btn-group" data-toggle="buttons-radio">
+  <% (2007..2011).each do |yr| %>
+    <% btn_class = "btn btn-primary" %>
+    <% btn_class << " active" if yr == 2007 %>
+    <button class="<%= btn_class %>"><%= yr %></button>
+  <% end %>
+</div>

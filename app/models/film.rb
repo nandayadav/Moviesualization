@@ -1,6 +1,6 @@
 class Film
   include MongoMapper::Document
-  key :name, String 
+  key :name, String, :required => true, :unique => true
   key :tomato_score, Integer #Rotten Tomatoes score(%)
   key :audience_score, Integer #Audience score from Tomato
   key :studio, String

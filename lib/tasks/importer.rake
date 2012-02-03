@@ -6,6 +6,7 @@ namespace :import do
     f.each do |story, val|
       puts story
       s = Story.find_by_name(story)
+      next unless s
       s.color = val['color'].to_s
       rgb = val['color'].to_s.match /(..)(..)(..)/
       s.red = rgb[1].hex
@@ -16,16 +17,24 @@ namespace :import do
   end
   task :csv => :environment do
     raise "Enter year=" if ENV['year'].nil?
-    CSV.foreach("data/file_2011.csv") do |row|
-      next unless row[0].nil?
+    CSV.foreach("data/file_#{ENV['year']}.csv") do |row|
+      next unless row[0].nil? 
       f = Film.new
+      next if row[1].nil? || row[5].nil?
       f.name = row[1]
       f.studio = row[2]
       f.tomato_score = row[3]
       f.audience_score = row[4]
-      s = Story.find_by_name(row[5])
-      s ||= Story.create(:name => row[5])
-      f.story = s
+      story_name = row[5].titleize.strip
+      next if story_name == 'Story'
+      story_name = 'The Riddle' if story_name == 'Riddle'
+      s = Story.find_by_name(story_name)
+      begin
+        s ||= Story.create!(:name => story_name)
+        f.story = s
+      rescue Exception => e
+        puts e.message
+      end
       g = Genre.find_by_name(row[6])
       g ||= Genre.create(:name => row[6])
       f.genre = g
