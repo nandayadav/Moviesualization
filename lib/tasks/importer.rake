@@ -15,6 +15,19 @@ namespace :import do
       s.save!
     end
   end
+  
+  task :story_averages => :environment do
+    Story.all.each do |story|
+      puts story.name
+      films = story.films.all
+      total_budget = films.map(&:budget).sum
+      story.average_budget = total_budget/films.size
+      puts "Budget: #{story.average_budget}"
+      story.average_profit = (films.map(&:worldwide_gross).compact.sum)/films.size - story.average_budget
+      story.average_tomato_score = (films.map(&:tomato_score).compact.sum)/films.size
+      story.save!
+    end
+  end
   task :csv => :environment do
     raise "Enter year=" if ENV['year'].nil?
     index = 0
@@ -22,9 +35,9 @@ namespace :import do
       index += 1
       #puts row.inspect
       next if index < 3
-      #next unless row[0].nil? 
+      #Dont proceed if don't have all of name, story, worldwide_gross and budget
+      next if row[0].nil? || row[4].nil? || row[11].nil? || row[10].nil?
       f = Film.new
-      next if row[0].nil? || row[4].nil? || row[11].nil?
       f.name = row[0].strip
       f.studio = row[1]
       f.tomato_score = row[2]

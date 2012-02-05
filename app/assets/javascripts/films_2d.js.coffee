@@ -1,7 +1,7 @@
 # Place all the behaviors and hooks related to the matching controller here.
 # All this logic will automatically be available in application.js.
 # You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script
-
+    
 class Film
   constructor: (@pr, @name, @tomato_score, @audience_score, @story_name, @budget, @profitability, @worldwide_gross, @r, @g, @b) ->  
     # @x = Math.round(@pr.random(500))
@@ -30,7 +30,7 @@ class Film
     @location = new @pr.PVector(@x, @y, @z)
     @velocity = new @pr.PVector(1.0, 1.0, 0.0)
     
-  update_velocity: () ->
+  updateVelocity: () ->
     x = @velocity.x
     y = @velocity.y
     if @location.x < @x_final
@@ -50,7 +50,7 @@ class Film
     @velocity.y = y
     
     
-  update_positions: () ->
+  updatePositions: () ->
     if @x < @x_final
       @x += 1
     else if @x > @x_final
@@ -61,7 +61,7 @@ class Film
     else if @y > @y_final
       @y -= 1
       
-  update_radius: () ->
+  updateRadius: () ->
     if @pr.abs(@radius - @final_radius) < 1.0
       @radius = @final_radius
     else if @radius < @final_radius
@@ -73,9 +73,6 @@ class Film
   draw: () ->
     return if @disabled
     @location.add(@velocity)
-    #for vibration
-    #@pr.translate(@x + @pr.random(1.0), @y + @pr.random(1.0))
-    #@pr.translate(@x, @y)
     if @equilibrium
       @pr.translate(@location.x, @location.y, @location.z) 
     else
@@ -95,8 +92,20 @@ class Film
     
 film_draw = (pr) ->  
 
+  pr.getStoryData = () ->
+    stories = []
+    $.ajax
+      url : '/stories'
+      type: 'GET',
+      success: (data) ->
+        for f in data
+          story = new Film(pr, f['name'], f['tomato_score'], 0, f['name'], f['budget'], f['profit'], 0, f['red'], f['green'], f['blue'])
+          stories.push(story)
+      dataType: 'json'
+    return stories
+    
   #Ajax call
-  pr.get_data = (year) ->
+  pr.getData = (year) ->
     films = []
     $.ajax
       url : '/films?year=' + year
@@ -107,18 +116,28 @@ film_draw = (pr) ->
           films.push(film)
       dataType: 'json'
     return films
+    
+  pr.drawStories = () ->
+    @films = []
+    pr.noLoop() #Stop if its still looping
+    pr.redraw()
+    @films = pr.getStoryData()
+    for f in @films
+      console.log("Name: " + f.name)
+    @draw_count = 0
+    pr.loop()
       
   pr.reset = (year) ->
     @films = []
     pr.noLoop() #Stop if its still looping
     pr.redraw()
     console.log("Year: " + year)
-    @films = pr.get_data(year)
+    @films = pr.getData(year)
     @year = year
     @draw_count = 0
     pr.loop()
     
-  pr.get_averages = () ->
+  pr.getAverages = () ->
     avg = {
       2007: {
         budget: 63
@@ -142,7 +161,7 @@ film_draw = (pr) ->
       }
     }
     
-  pr.draw_axes = () ->
+  pr.drawAxes = () ->
     pr.fill(0, 0, 0)
     pr.strokeWeight(2)
     pr.stroke(0)
@@ -183,9 +202,9 @@ film_draw = (pr) ->
     
   pr.setup = () ->
     @draw_count = 0
-    @averages = pr.get_averages()
+    @averages = pr.getAverages()
     @year = 2007
-    @films = pr.get_data(@year)
+    @films = pr.getData(@year)
     pr.size(900, 800, pr.OPENGL)
     pr.frameRate(30)
     pr.background(212)
@@ -201,6 +220,7 @@ film_draw = (pr) ->
   #   pr.redraw()
     
   pr.mouseReleased = () ->
+    $('#film-popover').attr('data-content', '')
     $('#film-popover').popover('hide')
     
   pr.mousePressed = () ->
@@ -220,26 +240,7 @@ film_draw = (pr) ->
       $('#film-popover').attr('data-title', matched.name)
       $('#film-popover').attr('data-content', content)
       $('#film-popover').popover('show')
-    
-    
-  # 
-  # #Aggregate films into their story_name/plots  
-  # pr.mouseClicked = () ->
-  #   pr.redraw()
-  #   console.log("(" + pr.mouseX + "," + pr.mouseY + ")")
-  #     for f in @films
-  #       if (pr.dist(pr.mouseX, pr.mouseY, f.x_final + 50, f.y_final) < f.tomato_score/4)
-  #         console.log("Name: " + f.name)
-  #         console.log("Worldwide: " + f.worldwide_gross)
-  #         console.log("Profitability: " + f.profitability)
-  #         console.log("X_final: " + f.x_final)
-  #         console.log("Y_final: " + f.y_final)
-  #         console.log("mouseY: " + pr.mouseY)
-  #         break
-      
-    
-    
-    
+
   pr.draw = () ->
     @draw_count += 1
     #pr.pushMatrix()
@@ -258,14 +259,14 @@ film_draw = (pr) ->
     for film in @films 
       pr.pushMatrix()     
       film.draw() 
-      film.update_velocity()
-      #film.update_positions()
-      film.update_radius()
+      film.updateVelocity()
+      #film.updatePositions()
+      film.updateRadius()
       pr.popMatrix()
     
     #pr.fill(0, 102, 153)
     
-    pr.draw_axes()
+    pr.drawAxes()
     #Instead of checking if film is in its equlibrium place after every render, this is more efficient as (pr.width + pr.height)/2 frames should be more than enough for film to reach its place
     if @draw_count > 600
       console.log("stopped")
@@ -280,13 +281,13 @@ $(document).ready ->
   canvas = document.getElementById "processing"
   pr = new Processing(canvas, film_draw)
   
-  $('.btn-primary').click ->
+  $('.year-buttons').click ->
     # alert($(this).text())
     if pr
       pr.reset($(this).text())
     
   $('#film-popover').popover({ placement: 'right'})
-  $('button').click ->
+  $('.nav-buttons').click ->
     story = $(this).text()
     for film in pr.films
       if film.story_name == story
@@ -294,6 +295,10 @@ $(document).ready ->
       else
         film.disabled = true
     pr.redraw()
+    
+  $('#story-btn').click ->
+    alert('wt')
+    pr.drawStories()
 
     
       

@@ -7,5 +7,8 @@ class Story
   key :color, String #HHAA00 format
   many :films
   key :gradient, String
+  key :average_profit
+  key :average_budget
+  key :average_tomato_score
 
 end
