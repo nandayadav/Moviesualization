@@ -21,10 +21,10 @@ namespace :import do
       puts story.name
       films = story.films.all
       total_budget = films.map(&:budget).sum
-      story.average_budget = total_budget/films.size
+      story.average_budget = (total_budget/films.size).round
       puts "Budget: #{story.average_budget}"
-      story.average_profit = (films.map(&:worldwide_gross).compact.sum)/films.size - story.average_budget
-      story.average_tomato_score = (films.map(&:tomato_score).compact.sum)/films.size
+      story.average_worldwide_gross = ((films.map(&:worldwide_gross).compact.sum)/films.size).round
+      story.average_tomato_score = ((films.map(&:tomato_score).compact.sum)/films.size).round
       story.save!
     end
   end

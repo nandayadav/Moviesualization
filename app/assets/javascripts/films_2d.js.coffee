@@ -7,8 +7,8 @@ class Film
     # @x = Math.round(@pr.random(500))
     # @y = Math.round(@pr.random(500))
     #@x = Math.round(pr.random(800)) + 50
-    @x = 400
-    @y = 200
+    @x = 0
+    @y = 700
     @radius = 5
     
     @tomato_score = 50 if @tomato_score == undefined
@@ -99,7 +99,8 @@ film_draw = (pr) ->
       type: 'GET',
       success: (data) ->
         for f in data
-          story = new Film(pr, f['name'], f['tomato_score'], 0, f['name'], f['budget'], f['profit'], 0, f['red'], f['green'], f['blue'])
+          console.log("..." + f['name'])
+          story = new Film(pr, f['name'], f['average_tomato_score'], 0, f['name'], f['average_budget'], 'N/A', f['average_worldwide_gross'], f['red'], f['green'], f['blue'])
           stories.push(story)
       dataType: 'json'
     return stories
@@ -119,15 +120,18 @@ film_draw = (pr) ->
     
   pr.drawStories = () ->
     @films = []
+    @story_display = true
     pr.noLoop() #Stop if its still looping
+    @draw_count = 0
     pr.redraw()
+    console.log("Getting data..")
     @films = pr.getStoryData()
     for f in @films
       console.log("Name: " + f.name)
-    @draw_count = 0
     pr.loop()
       
   pr.reset = (year) ->
+    @story_display = false
     @films = []
     pr.noLoop() #Stop if its still looping
     pr.redraw()
@@ -192,15 +196,17 @@ film_draw = (pr) ->
       pr.text((700-y), 0, 0)
       pr.popMatrix()
     
-    pr.strokeWeight(1)
-    #Average lines
-    avg_budget = @averages[@year]['budget'] * 4
-    avg_profit = @averages[@year]['profit']
-    pr.line(avg_budget, 700, avg_budget, 0)
-    pr.line(0, 700 - avg_profit, pr.width, 700 - avg_profit)
+    unless @story_display
+      pr.strokeWeight(1)
+      #Average lines
+      avg_budget = @averages[@year]['budget'] * 4
+      avg_profit = @averages[@year]['profit']
+      pr.line(avg_budget, 700, avg_budget, 0)
+      pr.line(0, 700 - avg_profit, pr.width, 700 - avg_profit)
     
     
   pr.setup = () ->
+    @story_display = false
     @draw_count = 0
     @averages = pr.getAverages()
     @year = 2007
@@ -249,15 +255,19 @@ film_draw = (pr) ->
     #pr.camera(pr.width/2, pr.height/2, pr.height/2, 10, pr.width/2, 0.0, 0.0, 1.0, 0.0)
     pr.camera()
     pr.translate(50, 0, 0)
-    pr.rotateY(@angle)
+    #pr.rotateY(@angle)
     # pr.rotateX(@angle)
     #pr.endCamera()
-    
+    if @story_display
+      console.log("....")
+      pr.translate(10, -400)
+      pr.scale(1.5)
+      #pr.translate(-500,-400)
     #pr.pointLight(51, 102, 126, 35, 40, 36)
     pr.background(212)
     #pr.directionalLight(211, 13, 36, 800, 800, 2);
     for film in @films 
-      pr.pushMatrix()     
+      pr.pushMatrix()    
       film.draw() 
       film.updateVelocity()
       #film.updatePositions()
@@ -297,7 +307,6 @@ $(document).ready ->
     pr.redraw()
     
   $('#story-btn').click ->
-    alert('wt')
     pr.drawStories()
 
     
