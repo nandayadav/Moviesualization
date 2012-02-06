@@ -7,8 +7,8 @@ class Film
     # @x = Math.round(@pr.random(500))
     # @y = Math.round(@pr.random(500))
     #@x = Math.round(pr.random(800)) + 50
-    @x = 0
-    @y = 700
+    @x = 400
+    @y = 400
     @radius = 5
     
     @tomato_score = 50 if @tomato_score == undefined
@@ -73,17 +73,14 @@ class Film
   draw: () ->
     return if @disabled
     @location.add(@velocity)
+    @pr.fill(@r, @g, @b)
     if @equilibrium
       @pr.translate(@location.x, @location.y, @location.z) 
     else
       #vibration 
       @pr.translate(@location.x + @pr.random(2.0), @location.y + @pr.random(2.0)) 
-    #@pr.scale(0.25)
     @pr.noStroke()
-    @pr.fill(@r, @g, @b)
-    
     @pr.sphere(@radius)
-    #@pr.sphere(20)
     if @velocity.x == 0 and @velocity.y == 0
       #sets its equilibrium reached state
       @equilibrium = true
@@ -207,6 +204,7 @@ film_draw = (pr) ->
     
   pr.setup = () ->
     @story_display = false
+    @story_scale = 1.5
     @draw_count = 0
     @averages = pr.getAverages()
     @year = 2007
@@ -230,10 +228,17 @@ film_draw = (pr) ->
     $('#film-popover').popover('hide')
     
   pr.mousePressed = () ->
+    console.log("X: " + pr.mouseX)
+    console.log("Y: " + pr.mouseY)
     matched = null
     min_distance = null
     for f in @films
-      dist = pr.dist(pr.mouseX, pr.mouseY, f.x_final + 50, f.y_final)
+      if pr.story_display
+        console.log("scaled x" + 1.5*(f.x_final + 60))
+        console.log("scaled y" + 1.5*f.y_final)
+        dist = pr.dist(pr.mouseX, pr.mouseY, 1.5*(f.x_final + 60), 1.5*f.y_final)
+      else
+        dist = pr.dist(pr.mouseX, pr.mouseY, f.x_final + 50, f.y_final)
       if dist < f.radius
         console.log("found: " + f.name)
         if (min_distance and dist < min_distance) or (!min_distance)
@@ -259,9 +264,8 @@ film_draw = (pr) ->
     # pr.rotateX(@angle)
     #pr.endCamera()
     if @story_display
-      console.log("....")
       pr.translate(10, -400)
-      pr.scale(1.5)
+      pr.scale(@story_scale)
       #pr.translate(-500,-400)
     #pr.pointLight(51, 102, 126, 35, 40, 36)
     pr.background(212)
@@ -296,7 +300,8 @@ $(document).ready ->
     if pr
       pr.reset($(this).text())
     
-  $('#film-popover').popover({ placement: 'right'})
+  $('#film-popover').popover({ placement: 'left'})
+  $('#stories-popover').tooltip( { placement: 'bottom'})
   $('.nav-buttons').click ->
     story = $(this).text()
     for film in pr.films

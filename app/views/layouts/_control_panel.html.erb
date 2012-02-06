@@ -1,16 +1,26 @@
-<% @stories.in_groups_of(9).each do |stories| %>
+<%# @stories.in_groups_of(15).each do |stories, idx| %>
   <div class="btn-group" style="padding: 2px;" data-toggle="buttons-radio">
-  <% stories.compact.each_with_index do |story, index| %>
+  <% @stories.in_groups_of(12).first.compact.each_with_index do |story, index| %>
       <button class="btn nav-buttons" style="background-color: #<%= story.color %>"><%= story.name %></button>
     <!-- <button class="btn common" style="<%#= common_btn(story.color || '57a957', story.gradient || '62c462') %>"><%= story.name %></button>&nbsp; -->
   <% end %>
   </div>
-<% end %>
-<div class="btn-group" data-toggle="buttons-radio">
-  <% (2007..2011).each do |yr| %>
-    <% btn_class = "btn btn-primary year-buttons" %>
-    <% btn_class << " active" if yr == 2007 %>
-    <button class="<%= btn_class %>"><%= yr %></button>
+<%# end %>
+<div class="btn-toolbar">
+  <div class="btn-group" data-toggle="buttons-radio">
+  <% @stories.in_groups_of(10)[1].compact.each_with_index do |story, index| %>
+      <button class="btn nav-buttons" style="background-color: #<%= story.color %>"><%= story.name %></button>
+    <!-- <button class="btn common" style="<%#= common_btn(story.color || '57a957', story.gradient || '62c462') %>"><%= story.name %></button>&nbsp; -->
   <% end %>
+  </div>
+  <div class="btn-group" data-toggle="buttons-radio">
+    <% (2007..2011).each do |yr| %>
+      <% btn_class = "btn btn-primary year-buttons" %>
+      <% btn_class << " active" if yr == 2007 %>
+      <button class="<%= btn_class %>"><%= yr %></button>
+    <% end %>
+  </div>
+  <div class="btn-group">
+    <button class="btn btn-primary" id='story-btn'><a href="#" id="stories-popover" rel="tooltip" data-original-title="See averages of the stories" style="color: #fff; text-decoration: none;">Stories</a></button>
+  </div>
 </div>
-<button class="btn btn-primary" id='story-btn'>Story Average</button>
