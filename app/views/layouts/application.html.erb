@@ -38,11 +38,11 @@
             <span class="i-bar"></span>
             <span class="i-bar"></span>
           </a>
-          <a class="brand" href="#">Moviesualization</a>
+          <a class="brand" href="/">Moviesualization</a>
           <div class="nav-collapse">
             <ul class="nav">
-              <li class="active"><a href="#">Home</a></li>
-              <li><a href="/about">About</a></li>
+              <li class="<%= request.fullpath.include?('films') ? '' : 'active' %>"><a href="/about">About</a></li>
+              <li class="<%= request.fullpath.include?('films') ? 'active' : '' %>"><a href="/films">Films</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
