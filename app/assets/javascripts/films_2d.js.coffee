@@ -4,9 +4,6 @@
     
 class Film
   constructor: (@pr, @name, @tomato_score, @audience_score, @story_name, @budget, @profitability, @worldwide_gross, @r, @g, @b) ->  
-    # @x = Math.round(@pr.random(500))
-    # @y = Math.round(@pr.random(500))
-    #@x = Math.round(pr.random(800)) + 50
     @x = 400
     @y = 400
     @radius = 5
@@ -298,20 +295,42 @@ $(document).ready ->
   $('.year-buttons').click ->
     # alert($(this).text())
     if pr
+      $('.nav-buttons').removeClass('active')
       pr.reset($(this).text())
     
   $('#film-popover').popover({ placement: 'left'})
   $('#stories-popover').tooltip( { placement: 'bottom'})
   $('.nav-buttons').click ->
-    story = $(this).text()
+    $(this).button('toggle')
+    #find all activated buttons
+    active_stories = []
+    #there must be 1 liner for this??
+    for active in $('.nav-buttons.active')
+      active_stories.push(active.innerHTML)
     for film in pr.films
-      if film.story_name == story
+      if film.story_name in active_stories
         film.disabled = false
       else
         film.disabled = true
-    pr.redraw()
+    pr.loop()
+  
+  $('#toggle').click ->
+    $('.nav-buttons').toggleClass('active')
+    #find all activated buttons
+    active_stories = []
+    #there must be 1 liner for this??
+    for active in $('.nav-buttons.active')
+      active_stories.push(active.innerHTML)
+    for film in pr.films
+      if film.story_name in active_stories
+        film.disabled = false
+      else
+        film.disabled = true
+    pr.loop()
+      
     
   $('#story-btn').click ->
+    $('.nav-buttons').removeClass('active')
     pr.drawStories()
 
     

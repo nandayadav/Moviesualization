@@ -1,15 +1,15 @@
 features todo:
-better buttons(use active class and js to allow multiple selection at once)
+better buttons(use active class and js to allow multiple selection at once)(DONE)
 year selection(DONE)
 film details in mouseClicked(DONE)
 why there's empty story in some cases??(DONE)
 data verification(partially DONE)
 GAanlytics(DONE)
-average / story
-Remove HTTP auth(before submitting)
+average / story(DONE)
+Remove HTTP auth(before submitting)(DONE)
 Add thin webserver
 use latest csv data(DONE)
-add index/landing page with instructions
+add index/landing page with instructions(DONE)
 
 
 
