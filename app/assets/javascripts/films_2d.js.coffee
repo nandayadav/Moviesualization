@@ -11,8 +11,6 @@ class Film
     @tomato_score = 50 if @tomato_score == undefined
     @final_radius = @tomato_score/4
     @final_radius = 5 if @final_radius < 5
-    #@radius = @final_radius
-    #@radius = 5.0 if @radius < 5.0
     @z = 0
     @x_final = Math.round(@budget * 4)
     @x_final = (@pr.width - 50) if @x_final > (@pr.width - 50)
@@ -112,6 +110,21 @@ film_draw = (pr) ->
       dataType: 'json'
     return films
     
+  pr.resetScores = () ->
+    @min_score = 0
+    @max_score = 0
+
+  pr.applyScoresAndDraw = (min, max) ->
+    pr.noLoop()
+    @min_score = min
+    @max_score = max
+    for f in @films
+      if f.tomato_score > @min_score and f.tomato_score < @max_score
+        f.disabled = false #if f.disabled #dont reset if already was false
+      else if f.tomato_score < @min_score or f.tomato_score > @max_score
+        f.disabled = true #unless f.disabled #dont reset if already was true
+    pr.loop()
+    
   pr.drawStories = () ->
     @films = []
     @story_display = true
@@ -201,6 +214,8 @@ film_draw = (pr) ->
     
   pr.setup = () ->
     @story_display = false
+    @min_score = 0
+    @max_score = 100
     @story_scale = 1.5
     @draw_count = 0
     @averages = pr.getAverages()
@@ -225,8 +240,6 @@ film_draw = (pr) ->
     $('#film-popover').popover('hide')
     
   pr.mousePressed = () ->
-    console.log("X: " + pr.mouseX)
-    console.log("Y: " + pr.mouseY)
     matched = null
     min_distance = null
     for f in @films
@@ -246,20 +259,9 @@ film_draw = (pr) ->
 
   pr.draw = () ->
     @draw_count += 1
-    #pr.pushMatrix()
     pr.lights()
-    #pr.beginCamera()
-    #pr.camera(pr.width/2, pr.height/2, pr.height/2, 10, pr.width/2, 0.0, 0.0, 1.0, 0.0)
     pr.camera()
     pr.translate(50, 0, 0)
-    #pr.rotateY(@angle)
-    # pr.rotateX(@angle)
-    #pr.endCamera()
-    #if @story_display
-      #pr.translate(10, -400)
-      #pr.scale(@story_scale)
-      #pr.translate(-500,-400)
-    #pr.pointLight(51, 102, 126, 35, 40, 36)
     pr.background(212)
     #pr.directionalLight(211, 13, 36, 800, 800, 2);
     for film in @films 
@@ -269,8 +271,6 @@ film_draw = (pr) ->
       #film.updatePositions()
       film.updateRadius()
       pr.popMatrix()
-    
-    #pr.fill(0, 102, 153)
     
     pr.drawAxes()
     #Instead of checking if film is in its equlibrium place after every render, this is more efficient as (pr.width + pr.height)/2 frames should be more than enough for film to reach its place
@@ -291,6 +291,8 @@ $(document).ready ->
     # alert($(this).text())
     if pr
       $('.nav-buttons').removeClass('active')
+      pr.resetScores()
+      resetSlider()
       pr.reset($(this).text())
     
   $('#film-popover').popover({ placement: 'left'})
@@ -304,7 +306,7 @@ $(document).ready ->
       active_stories.push(active.innerHTML)
     for film in pr.films
       if film.story_name in active_stories
-        film.disabled = false
+        film.disabled = false unless film.tomato_score < pr.min_score or film.tomato_score > pr.max_score
       else
         film.disabled = true
     pr.loop()
@@ -318,15 +320,41 @@ $(document).ready ->
       active_stories.push(active.innerHTML)
     for film in pr.films
       if film.story_name in active_stories
-        film.disabled = false
+        film.disabled = false unless film.tomato_score < pr.min_score or film.tomato_score > pr.max_score
       else
-        film.disabled = true
-    pr.loop()
+        film.disabled = true 
+    pr.redraw()
       
     
+  resetSlider = () ->
+    $('#slider').slider('values', 0, $('#slider').slider('option','min'))
+    $('#slider').slider('values', 1, $('#slider').slider('option','max'))
+    $("#score_min").text(0)
+    $("#score_max").text(100)
+  
   $('#story-btn').click ->
     $('.nav-buttons').removeClass('active')
+    pr.resetScores()
+    resetSlider()
     pr.drawStories()
+  
+  $("#slider").slider({
+    step: 5,
+    range: true,
+    values: [0, 100],
+    max: 100,
+    min: 0,
+    slide: (event, ui) ->
+      $("#score_min").text(ui.values[0])
+      $("#score_max").text(ui.values[1])
+    change: (event, ui) ->
+      if pr
+        $('.nav-buttons').removeClass('active')
+        pr.applyScoresAndDraw(ui.values[0], ui.values[1])
+      else
+        alert("Drawing not initialized yet")
+
+  })
 
     
       
