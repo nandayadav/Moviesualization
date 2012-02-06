@@ -230,12 +230,7 @@ film_draw = (pr) ->
     matched = null
     min_distance = null
     for f in @films
-      if pr.story_display
-        console.log("scaled x" + 1.5*(f.x_final + 60))
-        console.log("scaled y" + 1.5*f.y_final)
-        dist = pr.dist(pr.mouseX, pr.mouseY, 1.5*(f.x_final + 60), 1.5*f.y_final)
-      else
-        dist = pr.dist(pr.mouseX, pr.mouseY, f.x_final + 50, f.y_final)
+      dist = pr.dist(pr.mouseX, pr.mouseY, f.x_final + 50, f.y_final)
       if dist < f.radius
         console.log("found: " + f.name)
         if (min_distance and dist < min_distance) or (!min_distance)
@@ -260,9 +255,9 @@ film_draw = (pr) ->
     #pr.rotateY(@angle)
     # pr.rotateX(@angle)
     #pr.endCamera()
-    if @story_display
-      pr.translate(10, -400)
-      pr.scale(@story_scale)
+    #if @story_display
+      #pr.translate(10, -400)
+      #pr.scale(@story_scale)
       #pr.translate(-500,-400)
     #pr.pointLight(51, 102, 126, 35, 40, 36)
     pr.background(212)

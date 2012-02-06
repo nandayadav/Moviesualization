@@ -1,5 +1,5 @@
 <%# @stories.in_groups_of(15).each do |stories, idx| %>
-  <div class="btn-group" style="padding: 2px;" data-toggle="buttons-radio">
+  <div class="btn-group" style="padding: 2px;" data-toggle="buttons">
   <% @stories.in_groups_of(13).first.compact.each_with_index do |story, index| %>
       <button class="btn nav-buttons" style="background-color: #<%= story.color %>"><%= story.name %></button>
     <!-- <button class="btn common" style="<%#= common_btn(story.color || '57a957', story.gradient || '62c462') %>"><%= story.name %></button>&nbsp; -->
@@ -23,7 +23,7 @@
       <button class="<%= btn_class %>"><%= yr %></button>
     <% end %>
   </div>
-  <div class="btn-group">
+  <div class="btn-group" data-toggle="button">
     <button class="btn btn-primary" id='story-btn'><a href="#" id="stories-popover" rel="tooltip" data-original-title="See averages of the stories for all years" style="color: #fff; text-decoration: none;">Stories</a></button>
   </div>
 </div>
