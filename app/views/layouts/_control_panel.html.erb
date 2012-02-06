@@ -8,7 +8,7 @@
 <%# end %>
 <div class="btn-toolbar">
   <div class="btn-group" data-toggle="button">
-  <% @stories.in_groups_of(9)[1].compact.each_with_index do |story, index| %>
+  <% @stories.in_groups_of(13)[1].compact.each_with_index do |story, index| %>
       <button class="btn nav-buttons" style="background-color: #<%= story.color %>"><%= story.name %></button>
     <!-- <button class="btn common" style="<%#= common_btn(story.color || '57a957', story.gradient || '62c462') %>"><%= story.name %></button>&nbsp; -->
   <% end %>
