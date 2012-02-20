@@ -1,15 +1,9 @@
-features todo:
-better buttons(use active class and js to allow multiple selection at once)(DONE)
-year selection(DONE)
-film details in mouseClicked(DONE)
-why there's empty story in some cases??(DONE)
-data verification(partially DONE)
-GAanlytics(DONE)
-average / story(DONE)
-Remove HTTP auth(before submitting)(DONE)
-Add thin webserver
-use latest csv data(DONE)
-add index/landing page with instructions(DONE)
+Code for Interactive App Challenge Submission for 'Hollywoods Budgets' Visualization challenge
+http://www.informationisbeautifulawards.com/2012/01/challenge-of-the-stars/
 
+Libraries used: 
+Processing.js with Coffeescript
+Rails 3.1.1 (really overkill to use rails, just for getting something up and quick started with rails)
+      
 
 
