@@ -7,5 +7,6 @@ Rails 3.1.1 (really overkill to use rails, just for getting something up and qui
 
 Demo: (http://moviesualization.nandayadav.com)
       
+Meat of the code is https://github.com/nandayadav/Moviesualization/blob/master/app/assets/javascripts/films_2d.js.coffee
 
 
