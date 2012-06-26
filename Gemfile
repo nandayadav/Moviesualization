@@ -7,6 +7,7 @@ gem 'rails', '3.2.0'
 
 gem 'mongo_mapper'
 gem 'coffeebeans'
+gem 'bson_ext'
 
 # Gems used only for assets and not required
 # in production environments by default.
